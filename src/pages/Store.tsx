@@ -17,8 +17,15 @@ const getVisibleSales = () => {
     if (typeof window === "undefined") return SALES;
 
     const url = window.location.href;
+    const isPhase2 = url.includes("02"); // 2기 여부 확인
 
-    let list = [...SALES];
+    // SALES 원본을 복사하면서 가격 조건 추가
+    let list = SALES.map((item) => {
+        if (isPhase2 && item.id === "date") {
+            return { ...item, price: 22500 }; // 2기일 때 date 가격 수정
+        }
+        return item;
+    });
 
     // 01 포함 → zepPoint 숨기기
     if (url.includes("01")) {
@@ -92,7 +99,8 @@ const Store = () => {
         modal.open({
             id: "purchase",
             mode: "no-btn",
-            content: <PurchaseModal cart={cart} />,
+            // 여기에 visibleSales를 추가로 전달합니다.
+            content: <PurchaseModal cart={cart} visibleSales={visibleSales} />,
         });
     };
 
@@ -195,9 +203,10 @@ export default Store;
 
 interface PurchaseModalProps {
     cart: Cart;
+    visibleSales: typeof SALES; // props 추가
 }
 
-const PurchaseModal = ({ cart }: PurchaseModalProps) => {
+const PurchaseModal = ({ cart, visibleSales }: PurchaseModalProps) => {
     const { userInfo } = useUserInfo();
     const modal = useModal();
     const navigate = useNavigate();
@@ -214,17 +223,20 @@ const PurchaseModal = ({ cart }: PurchaseModalProps) => {
                 sales: cart,
             }),
         });
-        if (result) {
+
+        // fetchData가 서버의 JSON 응답을 그대로 반환한다고 가정할 때
+        if (result && !result.error) {
             alert("구매가 완료되었습니다.");
             navigate(ROUTE_PATH.STATUS);
+            modal.close("purchase");
         } else {
-            alert("구매에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            // 서버에서 던진 Error("GM 식사권은...") 메시지가 출력됩니다.
+            alert(result?.error || "구매에 실패했습니다.");
         }
-        modal.close("purchase");
     };
 
-    // cart에서 1개 이상 담긴 항목만 필터링
-    const cartItems = SALES.filter((item) => cart[item.id as keyof Cart] > 0);
+    // SALES 대신 전달받은 visibleSales를 사용하여 필터링
+    const cartItems = visibleSales.filter((item) => cart[item.id as keyof Cart] > 0);
 
     return (
         <div className="purchase-modal">
@@ -243,6 +255,7 @@ const PurchaseModal = ({ cart }: PurchaseModalProps) => {
                                         <span className="name">{item.name}</span>
                                         <span className="ea">x {cart[item.id as keyof Cart]}</span>
                                         <span className="price">
+                                            {/* 여기서 item.price는 이미 22,500원으로 적용된 값입니다 */}
                                             {(item.price * cart[item.id as keyof Cart]).toLocaleString()} G
                                         </span>
                                     </li>
@@ -259,7 +272,7 @@ const PurchaseModal = ({ cart }: PurchaseModalProps) => {
                             </span>
                         </div>
                     </div>
-
+                    {/* ... 하단 버튼 로직 동일 */}
                     <div className="btn-container">
                         <CButton className="menuBtn close-btn" mode="primary" onClick={onSubmit}>
                             구매
@@ -273,6 +286,7 @@ const PurchaseModal = ({ cart }: PurchaseModalProps) => {
         </div>
     );
 };
+
 const StoreEntrance = () => {
     const modal = useModal();
     const { handleUserInfo } = useUserInfo();

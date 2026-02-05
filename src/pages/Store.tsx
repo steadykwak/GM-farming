@@ -223,14 +223,17 @@ const PurchaseModal = ({ cart, visibleSales }: PurchaseModalProps) => {
                 sales: cart,
             }),
         });
-
+        console.log("Full Server Response:", result);
         // fetchData가 서버의 JSON 응답을 그대로 반환한다고 가정할 때
         if (result && !result.error) {
-            alert("구매가 완료되었습니다.");
+            // 2. 만약 result.responseData.message에 들어있다면 아래처럼 접근해야 합니다.
+            // useFetch의 구현에 따라 다를 수 있으니 체크가 필요합니다.
+            const successMsg = result.message || result.responseData?.message || "구매가 완료되었습니다.";
+
+            alert(successMsg);
             navigate(ROUTE_PATH.STATUS);
             modal.close("purchase");
         } else {
-            // 서버에서 던진 Error("GM 식사권은...") 메시지가 출력됩니다.
             alert(result?.error || "구매에 실패했습니다.");
         }
     };

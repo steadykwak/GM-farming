@@ -4,6 +4,16 @@ import { NoStudent } from "../NoStudent";
 import { ROUTE_PATH } from "@/routes";
 import type { StudentInfo } from "@/apis/types";
 
+// [추가] 기수 판별 유틸리티 (다른 파일에 있다면 import 하세요)
+const getBatchId = () => {
+    if (import.meta.env.VITE_BATCH_ID) return import.meta.env.VITE_BATCH_ID;
+    const url = window.location.href;
+    const portMatch = url.match(/:50(\d+)/);
+    if (portMatch) return parseInt(portMatch[1], 10).toString();
+    const pathMatch = url.match(/(?:gm|batch|v|0)(\d+)/i);
+    return pathMatch ? parseInt(pathMatch[1], 10).toString() : "1";
+};
+
 type InventoryProps = Pick<StudentInfo, "itemMeal" | "itemMentor" | "itemBook" | "itemZepPoint" | "itemUnityAsset">;
 interface RendorInventoryControllerProps {
     isLoading: boolean;
@@ -12,32 +22,30 @@ interface RendorInventoryControllerProps {
 }
 
 export const RenderInventoryController = ({ result, isLoading, error }: RendorInventoryControllerProps) => {
-    if (isLoading) {
-        return <InvenIndicator />;
-    }
-    if (error) {
-        return <NoStudent />;
-    }
+    if (isLoading) return <InvenIndicator />;
+    if (error) return <NoStudent />;
     if (!result) return "";
 
     const items = [
-        { name: "GM 식사권", icon: "🎫", count: result.itemMeal },
-        { name: "멘토링 신청권", icon: "🎟️", count: result.itemMentor },
-        { name: "도서 구매권", icon: "📚", count: result.itemBook },
-        { name: "ZEP 포인트 구매권", icon: "🪙", count: result.itemZepPoint },
-        { name: "Unity 에셋 구매권", icon: "🎁", count: result.itemUnityAsset },
+        { id: "meal", name: "GM 식사권", icon: "🎫", count: result.itemMeal },
+        { id: "mentor", name: "멘토링 신청권", icon: "🎟️", count: result.itemMentor },
+        { id: "book", name: "도서 구매권", icon: "📚", count: result.itemBook },
+        { id: "zep", name: "ZEP 포인트 구매권", icon: "🪙", count: result.itemZepPoint },
+        { id: "asset", name: "Unity 에셋 구매권", icon: "🎁", count: result.itemUnityAsset },
     ];
-    // URL 기반 필터링만 따로 처리
+
+    // [수정] URL includes 대신 batchId 기반 필터링
+    const batchId = getBatchId();
     let visibleItems = items;
 
-    if (typeof window !== "undefined") {
-        const url = window.location.href;
-        if (url.includes("01")) {
-            visibleItems = visibleItems.filter((item) => item.icon !== "🪙");
-        }
-        if (url.includes("02") || url.includes("03")) {
-            visibleItems = visibleItems.filter((item) => item.icon !== "🎁");
-        }
+    // 1기: ZEP 포인트 숨기기
+    if (batchId === "1") {
+        visibleItems = visibleItems.filter((item) => item.id !== "zep");
+    }
+
+    // 2, 3기: Unity 에셋 숨기기
+    if (batchId === "4" || batchId === "5") {
+        visibleItems = visibleItems.filter((item) => item.id !== "asset");
     }
 
     return (

@@ -16,21 +16,25 @@ interface RankEntry {
 
 const Ranking = () => {
     const [rank, setRank] = useState<RankEntry[]>([]);
-    const { isLoading, error, fetchData } = useFetch({ action: "getranking" });
+
+    // [수정] batchId를 직접 전달하지 않습니다.
+    // useFetch 내부의 BATCH_ID 상수가 환경 변수를 읽어 처리합니다.
+    const { isLoading, error, fetchData } = useFetch({
+        action: "getranking",
+    });
 
     useEffect(() => {
         const fetchRankingData = async () => {
             try {
                 const data = await fetchData();
-                setRank(data);
-                console.log(data);
+                if (data) setRank(data);
             } catch (error) {
-                console.log(error);
+                console.log("Ranking fetch error:", error);
             }
         };
 
         fetchRankingData();
-    }, []);
+    }, [fetchData]); // fetchData를 의존성에 추가
 
     return (
         <>

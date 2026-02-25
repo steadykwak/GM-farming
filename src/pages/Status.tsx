@@ -11,51 +11,52 @@ import { useFetch } from "@/hooks/useFetch";
 const Status = () => {
     const { userInfo, handleUserInfo, removeUserInfo } = useUserInfo();
     const [result, setResult] = useState<StudentInfo | null>(null);
+
+    // 훅 내부에서 BATCH_ID를 알아서 처리하므로 수정 불필요
     const { error, isLoading, fetchData } = useFetch<StudentInfo>({
         action: "getstudentinfo",
     });
 
     const getUserStatus = useCallback(
-        async (value?: InputValueType) => {
+        async (nameArg?: string, phoneArg?: string) => {
+            const searchName = nameArg;
+            const searchPhone = phoneArg;
+
+            if (!searchName || !searchPhone) return;
+
             try {
-                if (value?.name && value?.phone) {
-                    const data = await fetchData(`name=${value?.name}&phone=${value?.phone}`);
-                    if (!data) throw new Error("잘못된 정보입니다. 다시 입력하세요.");
+                const query = `name=${searchName}&phone=${searchPhone}`;
+                const data = await fetchData(query);
 
+                if (data) {
                     setResult(data);
+                    // handleUserInfo 호출로 인한 리렌더링이
+                    // getUserStatus의 재생성을 유발하지 않도록 설계됨
                     handleUserInfo({
-                        name: value?.name,
-                        phone: value?.phone,
-                        goldLeft: data?.goldLeft || 0,
-                    });
-                } else if (userInfo.name && userInfo.phone) {
-                    const data = await fetchData(`name=${userInfo.name}&phone=${userInfo.phone}`);
-                    if (!data) throw new Error("잘못된 정보입니다. 다시 입력하세요.");
-
-                    setResult(data);
-                    handleUserInfo({
-                        name: userInfo.name,
-                        phone: userInfo.phone,
-                        goldLeft: data?.goldLeft || 0,
+                        name: searchName,
+                        phone: searchPhone,
+                        goldLeft: data.goldLeft || 0,
                     });
                 }
             } catch (error) {
-                console.error("Error fetching user status:", error);
+                console.error("사용자 정보 조회 실패:", error);
             }
         },
-        [userInfo.name, userInfo.phone]
+        [fetchData, handleUserInfo], // userInfo.name/phone을 의존성에서 제거!
     );
 
     const submitCallback = async (value?: InputValueType) => {
-        if (!value) return;
-        await getUserStatus(value);
+        if (value?.name && value?.phone) {
+            await getUserStatus(value.name, value.phone);
+        }
     };
 
     useEffect(() => {
-        if (userInfo.name && userInfo.phone) {
-            getUserStatus();
+        if (userInfo.name && userInfo.phone && !result) {
+            // !result 조건을 추가하면 이미 데이터를 가져온 후에는 재요청하지 않습니다.
+            getUserStatus(userInfo.name, userInfo.phone);
         }
-    }, [getUserStatus]);
+    }, [userInfo.name, userInfo.phone, getUserStatus, result]);
 
     return (
         <>

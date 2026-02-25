@@ -14,26 +14,23 @@ import { useCookieHandler } from "@/hooks/useCookieHandler";
 import type { StudentInfo } from "@/apis/types";
 
 const getVisibleSales = () => {
-    if (typeof window === "undefined") return SALES;
-
-    const url = window.location.href;
-    const isPhase2 = url.includes("02"); // 2기 여부 확인
-
-    // SALES 원본을 복사하면서 가격 조건 추가
+    const batchId = import.meta.env.VITE_BATCH_ID; // URL 대신 환경 변수 활용
+    console.log(batchId);
     let list = SALES.map((item) => {
-        if (isPhase2 && item.id === "date") {
-            return { ...item, price: 22500 }; // 2기일 때 date 가격 수정
+        // 2기일 때만 식사권 가격 수정
+        if (batchId === "2" && item.id === "date") {
+            return { ...item, price: 22500 };
         }
         return item;
     });
 
-    // 01 포함 → zepPoint 숨기기
-    if (url.includes("01")) {
+    // 1기: zepPoint 숨기기
+    if (batchId === "1") {
         list = list.filter((item) => item.id !== "zep");
     }
 
-    // 02 포함 → unityAsset 숨기기
-    if (url.includes("04") || url.includes("05") || url.includes("06")) {
+    // 4, 5기: unityAsset 숨기기
+    if (["4", "5"].includes(batchId)) {
         list = list.filter((item) => item.id !== "asset");
     }
 

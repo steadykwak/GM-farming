@@ -32,6 +32,6 @@ export const SALES = [
         name: "Unity Asset 구매권",
         price: 5000,
         icon: "🎁",
-        desc: "구매 정책 수립 중: 아직 구매하지 마세요! (복구 불가)",
+        desc: "프로젝트에 필요한 Asset과 교환 가능!",
     },
 ];

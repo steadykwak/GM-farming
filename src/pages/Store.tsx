@@ -9,13 +9,11 @@ import { useFetch } from "@/hooks/useFetch";
 import { useModal } from "@/contexts/ModalContext";
 import { LoadingIndicator } from "@/components/Status/LoadingIndicator";
 import { ShopIndicator } from "@/components/Status/ShopIndicator";
-
 import { useCookieHandler } from "@/hooks/useCookieHandler";
 import type { StudentInfo } from "@/apis/types";
 
 const getVisibleSales = () => {
     const batchId = import.meta.env.VITE_BATCH_ID; // URL 대신 환경 변수 활용
-    console.log(batchId);
     let list = SALES.map((item) => {
         // 2기일 때만 식사권 가격 수정
         if (batchId === "2" && item.id === "date") {
@@ -38,7 +36,7 @@ const getVisibleSales = () => {
 };
 
 type Cart = { date: number; mentor: number; book: number; zep: number; asset: number };
-console.log(window.location);
+
 const Store = () => {
     const { cookies } = useCookieHandler("uu");
     const {
@@ -104,9 +102,9 @@ const Store = () => {
     const updateUser = () => {
         modal.open({
             id: "store-entrance",
-            title: "다른 플레이어 검색하기",
-            content: <StoreEntrance />,
+            title: "🔎 다른 플레이어 검색하기",
             mode: "no-btn",
+            content: <StoreEntrance />,
         });
     };
     const visibleSales = getVisibleSales();
@@ -126,12 +124,16 @@ const Store = () => {
                         <span className="label">님의 보유 골드</span>
                         <span className="gold">{gold?.toLocaleString()} G</span>
                     </div>
-                    <CButton className="back-home" mode="default" onClick={updateUser}>
-                        🔍 다른 플레이어 검색하기
-                    </CButton>
-                    <CButton mode="link" to={ROUTE_PATH.ROOT} className="back-home">
-                        🏠 메인으로 돌아가기
-                    </CButton>
+
+                    {/* 이 컨테이너가 버튼 두 개를 감싸고 있어야 합니다 */}
+                    <div className="header-actions">
+                        <CButton mode="default" className="common-action-btn" onClick={updateUser}>
+                            🔍 다른 플레이어 검색하기
+                        </CButton>
+                        <CButton mode="link" to={ROUTE_PATH.ROOT} className="common-action-btn">
+                            🏠 메인으로 돌아가기
+                        </CButton>
+                    </div>
                 </div>
 
                 <div className="store-grid" onClick={handleCartSelect}>
@@ -166,6 +168,9 @@ const Store = () => {
                                         <span className="icon">{item.icon}</span>
                                         <span className="name">{item.name}</span>
                                     </div>
+                                    <span className="desc" id={item.id}>
+                                        {item.desc}
+                                    </span>
                                     <div className="info">
                                         <div className="controller" onClick={handleCartSelect}>
                                             <CButton mode="default" id={item.id} data-minus>
@@ -187,8 +192,13 @@ const Store = () => {
                         <strong className="price">{totalG.toLocaleString()} G</strong>
                     </div>
 
-                    <CButton mode="primary" disabled={totalG === 0} onClick={onSubmit}>
-                        구매하기
+                    <CButton
+                        mode="default" // primary 대신 default로 해서 공통 스타일 입히기
+                        className="btn-pay"
+                        disabled={totalG === 0}
+                        onClick={onSubmit}
+                    >
+                        💰 구매하기
                     </CButton>
                 </div>
             </div>
@@ -294,6 +304,7 @@ const StoreEntrance = () => {
         action: "getstudentinfo",
     });
     const navigate = useNavigate();
+
     const submitCallback = async (value?: InputValueType) => {
         if (!value) return;
         if (value?.name === "" && value?.phone === "") return;
@@ -309,20 +320,17 @@ const StoreEntrance = () => {
         modal.close("store-entrance");
         navigate(ROUTE_PATH.STORE);
     };
+
     return (
         <div className="store-entrance">
-            {isLoading || (error && <p>{error}</p>)}
+            {/* 에러 메시지 출력 위치 조정 */}
+            {!isLoading && error && <p className="error-msg">{error}</p>}
 
-            <CButton
-                className="menuBtn close-btn"
-                mode="outline"
-                disabled={isLoading}
-                onClick={() => modal.close("store-entrance")}
-            >
-                X
-            </CButton>
-
-            {isLoading ? <LoadingIndicator /> : <CustomForm submitCallback={submitCallback} />}
+            {isLoading ? (
+                <LoadingIndicator size="small" />
+            ) : (
+                <CustomForm submitCallback={submitCallback} onCancel={() => modal.close("store-entrance")} />
+            )}
         </div>
     );
 };

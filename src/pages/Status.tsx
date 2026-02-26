@@ -9,7 +9,6 @@ import { useUserInfo } from "@/contexts/UserInfoContext";
 import { useFetch } from "@/hooks/useFetch";
 import { useModal } from "@/contexts/ModalContext";
 import { LoadingIndicator } from "@/components/Status/LoadingIndicator";
-import { ModalLoadingIndicator } from "@/components/Status/ModalLoading";
 
 const Status = () => {
     const { userInfo, handleUserInfo } = useUserInfo();

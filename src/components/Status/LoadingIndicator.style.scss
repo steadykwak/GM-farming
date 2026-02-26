@@ -1,0 +1,234 @@
+/* ==========================================================================
+   🏗️ 인더스트리얼 로딩 인디케이터 ("노가다" 테마)
+   ========================================================================== */
+.industrial-loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    width: 400px;
+    background: rgba(15, 23, 42, 0.8); // 어두운 배경
+    border-radius: 16px;
+    // 거친 금속 질감의 테두리
+    border: 2px solid #475569;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+
+    /* 1. 중장비 진행 트랙 */
+    .heavy-progress-track {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        height: 24px;
+        background: #1e293b;
+        border-radius: 6px;
+        border: 3px solid #334155; // 더 두껍고 튼튼하게
+        overflow: hidden;
+        box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
+        margin-bottom: 25px;
+
+        .hazard-bar-moving {
+            width: 100%;
+            height: 100%;
+
+            /* 🌟 핵심 1: 계산하기 편하게 100px 단위로 패턴을 잡습니다. */
+            background-image: linear-gradient(
+                45deg,
+                #fbbf24 25%,
+                #000 25%,
+                #000 50%,
+                #fbbf24 50%,
+                #fbbf24 75%,
+                #000 75%,
+                #000 100%
+            );
+
+            /* 🌟 핵심 2: 배경 사이즈를 고정합니다. */
+            background-size: 50px 50px;
+
+            /* 🌟 핵심 3: background-position을 애니메이션합니다. */
+            animation: industrial-work 1.5s linear infinite;
+        }
+    }
+
+    /* 🏗️ 끊김 없는 무한 궤도 애니메이션 */
+    @keyframes industrial-work {
+        from {
+            /* 시작 지점 */
+            background-position: 0 0;
+        }
+        to {
+            /* 배경 사이즈(50px)만큼 정확히 이동하면 
+           다음 패턴과 완벽하게 겹쳐서 '툭' 끊기는 현상이 0%가 됩니다. */
+            background-position: 50px 0;
+        }
+    }
+
+    .loading-text-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        /* 문구가 바뀔 때마다 아래에서 위로 슥 올라오는 효과 */
+        animation: text-arrival 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    /* ⛏️ 아이콘 애니메이션: 망치질 + 진동 */
+    .working-icon {
+        font-size: 2rem;
+        display: inline-block;
+
+        /* 1. ⛏️ 곡괭이: 묵직하게 내리찍기 */
+        &.ani-mine {
+            animation: heavy-hammering 1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+        }
+
+        /* 2. ⚙️ 기어: 기계적으로 툭툭 끊기며 회전 */
+        &.ani-gear {
+            animation: industrial-spin 2s steps(8) infinite;
+        }
+
+        /* 3. 💎 보석: 영롱하게 빛나며 커지기 */
+        &.ani-gold {
+            animation: gem-shine 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
+        }
+
+        /* 4. 🎒 가방: 짐을 쑤셔 넣듯 들썩거리기 */
+        &.ani-pack {
+            animation: pack-shake 0.8s ease-in-out infinite;
+        }
+    }
+    /* 📝 문구 애니메이션: 투박한 글자 그림자 + 페이드 */
+    .industrial-loading-text {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #fbbf24;
+        text-shadow: 2px 2px 0px #000;
+    }
+    /* 📏 SMALL 버전 스타일 (모달용) */
+    &.small {
+        background: transparent; // 모달 배경을 그대로 쓰기 위해 투명화
+        border: none; // 모달 내부에선 테두리 제거 (선택 사항)
+        box-shadow: none;
+        width: 100%;
+        padding: 0;
+
+        .heavy-progress-track {
+            width: 100%;
+            max-width: 250px; // 더 좁게
+            height: 14px; // 더 얇게
+            border-width: 2px;
+            margin-bottom: 15px;
+        }
+
+        .working-icon {
+            font-size: 1.5rem; // 아이콘 축소
+        }
+
+        .industrial-loading-text {
+            font-size: 0.9rem; // 텍스트 축소
+            letter-spacing: 0;
+        }
+
+        /* 모달 안에서 곡괭이가 너무 크게 휘둘러지지 않게 보정 */
+        .ani-mine {
+            animation-name: heavy-hammering-small;
+        }
+    }
+}
+
+/* ==========================================================================
+   애니메이션 정의
+   ========================================================================== */
+/* 안전 무늬가 옆으로 이동하는 애니메이션 */
+@keyframes industrial-shift {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-30px);
+    } // 스트라이프 패턴 크기에 맞춰 조정
+}
+
+/* ⛏️ [Mine] 타격감 위주의 망치질 */
+/* ⛏️ [Mine] 타격감 위주의 곡괭이질 (날 방향에 맞춘 수정) */
+@keyframes heavy-hammering {
+    /* 0% : 준비 자세 */
+    0% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+
+    /* 70% : 들어 올리기 (Wind-up)
+       - 날이 왼쪽에 있으므로, 힘을 모으기 위해 오른쪽(시계방향)으로 들어 올립니다.
+       - 약간 위로, 뒤로 당기는 느낌을 줍니다.
+    */
+    70% {
+        transform: rotate(60deg) translate(10px, -15px);
+    }
+
+    /* 85% : 내리찍기 (Impact)
+       - 모은 힘으로 왼쪽 아래(반시계방향)를 향해 강하게 내리칩니다.
+       - 바닥에 닿는 충격으로 살짝 아래로 박히는 느낌을 줍니다.
+    */
+    85% {
+        // 찍는 순간 살짝 찌그러지는(scale) 느낌 추가로 타격감 강화
+        transform: rotate(-20deg) translate(-5px, 5px) scale(0.95);
+    }
+
+    /* 100% : 반동 및 복귀 (Recoil) */
+    100% {
+        transform: rotate(0deg) translate(0, 0) scale(1);
+    }
+}
+
+/* ⚙️ [Gear] 8단계로 끊어서 회전 (기계적인 느낌) */
+@keyframes industrial-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        /* 음수 값을 주어 반시계 방향으로 회전하게 합니다. */
+        transform: rotate(-360deg);
+    }
+}
+/* 💎 [Gold] 스케일 변화 + 밝기 변화 */
+@keyframes gem-shine {
+    0%,
+    100% {
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0 0 5px #fbbf24);
+    }
+    50% {
+        transform: scale(1.2);
+        filter: brightness(1.4) drop-shadow(0 0 15px #fbbf24);
+    }
+}
+
+/* 🎒 [Pack] 좌우로 흔들리며 위아래로 튀기 */
+@keyframes pack-shake {
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0);
+    }
+    25% {
+        transform: translate(-2px, -3px) rotate(-5deg);
+    }
+    50% {
+        transform: translate(0, -5px) rotate(0);
+    }
+    75% {
+        transform: translate(2px, -3px) rotate(5deg);
+    }
+}
+
+/* 문구 등장 (기존 유지) */
+@keyframes text-arrival {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

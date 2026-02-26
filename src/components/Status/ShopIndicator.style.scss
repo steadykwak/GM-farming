@@ -1,0 +1,158 @@
+.shop-loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 35px 20px;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 20px;
+    border: 2px solid #3b82f6;
+    box-shadow: inset 0 0 30px rgba(59, 130, 246, 0.15);
+
+    .throw-stage {
+        position: relative;
+        width: 240px;
+        height: 100px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        // 🛒 출발 카트
+        .source-cart {
+            font-size: 2.2rem;
+            filter: grayscale(0.3);
+            animation: cart-vibe 0.5s ease-in-out infinite alternate;
+        }
+
+        // 🎒 받는 가방
+        .receiving-pack {
+            font-size: 2.6rem;
+            animation: pack-catch 2s ease-in-out infinite;
+        }
+
+        // 🛍️ 포물선 X축 (왼쪽에서 오른쪽으로)
+        .bag-wrapper-x {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            animation: throw-x 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        // 🛍️ 포물선 Y축 (상하 회전)
+        .flying-bag-y {
+            display: block;
+            font-size: 1.8rem;
+            animation: throw-y 2s infinite cubic-bezier(0.35, 0, 0.65, 1);
+        }
+    }
+
+    .wavy-text-wrapper {
+        .shop-loading-text {
+            font-family: "Orbitron", sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #60a5fa;
+            text-shadow: 2px 2px 0px #000;
+            display: flex; // 글자들을 가로로 정렬
+            align-items: baseline;
+
+            .wavy-char {
+                display: inline-block;
+                animation: text-wave 1.2s ease-in-out infinite;
+            }
+
+            // 🌟 띄어쓰기 공간 확보
+            .wavy-space {
+                display: inline-block;
+                width: 8px; // 띄어쓰기 너비 명시적 지정
+            }
+
+            .dot-sync {
+                display: inline-block;
+                width: 30px;
+                margin-left: 2px;
+            }
+        }
+    }
+}
+
+/* ==========================================================================
+   🎬 수정된 애니메이션 키프레임
+   ========================================================================== */
+
+/* 1. X축: 🛒 -> 🎒 방향 이동 */
+@keyframes throw-x {
+    0% {
+        transform: translateX(0);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    85%,
+    100% {
+        transform: translateX(180px);
+        opacity: 0;
+    }
+}
+
+/* 2. Y축: 포물선 궤적 */
+@keyframes throw-y {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.8);
+    }
+    45% {
+        transform: translateY(-70px) rotate(180deg) scale(1.2);
+    } // 정점
+    85% {
+        transform: translateY(15px) rotate(360deg) scale(0.5);
+    } // 가방 속으로
+    100% {
+        transform: translateY(15px) rotate(360deg) scale(0.5);
+    }
+}
+
+/* 3. 카트 진동: 물건을 쏘아 올리는 느낌 */
+@keyframes cart-vibe {
+    from {
+        transform: translateX(-2px);
+    }
+    to {
+        transform: translateX(2px);
+    }
+}
+
+/* 4. 가방 반응: 물건을 받아먹을 때 꿀렁 */
+@keyframes pack-catch {
+    0%,
+    80% {
+        transform: scale(1);
+    }
+    85% {
+        transform: scale(1.2, 0.85) translateY(3px);
+    }
+    95% {
+        transform: scale(0.95, 1.05) translateY(-2px);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 5. 텍스트 물결 */
+@keyframes text-wave {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+        color: #fff;
+        text-shadow: 0 0 10px #3b82f6;
+    }
+}

@@ -1,8 +1,8 @@
 import { CButton } from "@/components/_common";
-import { InvenIndicator } from "../InvenIndicator";
 import { NoStudent } from "../NoStudent";
 import { ROUTE_PATH } from "@/routes";
 import type { StudentInfo } from "@/apis/types";
+import { ShopIndicator } from "../ShopIndicator";
 
 // [추가] 기수 판별 유틸리티 (다른 파일에 있다면 import 하세요)
 const getBatchId = () => {
@@ -22,7 +22,7 @@ interface RendorInventoryControllerProps {
 }
 
 export const RenderInventoryController = ({ result, isLoading, error }: RendorInventoryControllerProps) => {
-    if (isLoading) return <InvenIndicator />;
+    if (isLoading) return <ShopIndicator />;
     if (error) return <NoStudent />;
     if (!result) return "";
 
@@ -50,18 +50,24 @@ export const RenderInventoryController = ({ result, isLoading, error }: RendorIn
 
     return (
         <>
-            <h2>🎒 인벤토리</h2>
+            <h2 className="inventory-title">🎒 인벤토리</h2>
             <div className="inv-grid">
                 {visibleItems.map((item, index) => (
-                    <div className={`inv-slot ${!item.count && "inv-empty"}`} key={index}>
+                    <div className={`inv-slot ${!item.count ? "inv-empty" : "has-item"}`} key={index}>
                         <span className="inv-icon">{item.icon}</span>
                         <p className="inv-name">{item.name}</p>
-                        <span className="inv-count">x{item.count ? item.count : "0"}</span>
+                        <span className="inv-count">{item.count ? item.count : "0"}</span>
                     </div>
                 ))}
             </div>
-            <CButton mode="link" to={ROUTE_PATH.STORE} className="go-inventory">
-                상점 가기
+
+            {/* [수정] 클래스명을 수정하여 에메랄드 네온 스타일 적용 */}
+            <CButton
+                mode="link"
+                to={ROUTE_PATH.STORE}
+                className="common-action-btn go-inventory" // 클래스명 두 개 확인!
+            >
+                🛒 상점 가기
             </CButton>
         </>
     );

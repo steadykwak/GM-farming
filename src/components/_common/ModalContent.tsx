@@ -17,10 +17,10 @@ const ModalContents = ({ mode, id, title = "", content, onConfirm, onCancel }: M
                     <div className="modal" id={id}>
                         <h2>{title}</h2>
                         {content}
+                        <CButton mode="primary" className="common-action-btn primary" onClick={onClose}>
+                            확인
+                        </CButton>
                     </div>
-                    <CButton mode="primary" onClick={onClose}>
-                        확인
-                    </CButton>
                 </div>
             );
         case "confirm":
@@ -30,10 +30,11 @@ const ModalContents = ({ mode, id, title = "", content, onConfirm, onCancel }: M
                         <h2>{title}</h2>
                         {content}
                         <div className="btn-container">
-                            <CButton mode="primary" onClick={onConfirm}>
+                            <CButton mode="primary" className="common-action-btn" onClick={onConfirm}>
                                 확인
                             </CButton>
-                            <CButton mode="outline" onClick={onClose}>
+
+                            <CButton mode="outline" className="common-action-btn" onClick={onClose}>
                                 취소
                             </CButton>
                         </div>

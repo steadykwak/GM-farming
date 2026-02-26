@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate 추가
 import "./styles/Landing.style.scss";
 import type { StudentInfo } from "@/apis/types";
 import { ROUTE_PATH } from "@/routes";
@@ -8,34 +10,41 @@ import { useUserInfo } from "@/contexts/UserInfoContext";
 import { LoadingIndicator } from "@/components/Status/LoadingIndicator";
 
 const Landing = () => {
-    const modal = useModal();
-    const { userInfo } = useUserInfo();
+    const { open } = useModal(); // useModal 구조 분해
+    const { userInfo, handleUserInfo } = useUserInfo();
     const navigate = useNavigate();
-    const { fetchData } = useFetch({ action: "getstudentinfo" });
+    const { fetchData } = useFetch<StudentInfo>({ action: "getstudentinfo" });
+
     const entranceStore = () => {
+        // 사용자 정보가 없으면 모달을 띄움
         if (!userInfo.name || !userInfo.phone) {
-            modal.open({
+            open({
                 id: "store-entrance",
                 title: "상점 입장",
                 content: <StoreEntrance />,
-                mode: "no-btn",
+                mode: "no-btn", // 하단 기본 버튼 숨김
             });
         } else {
+            // 정보가 있으면 바로 상점으로 이동
             navigate(ROUTE_PATH.STORE);
         }
     };
 
+    // 기존의 무한 루프 위험이 있던 useEffect 교정
     useEffect(() => {
         if (userInfo.name && userInfo.phone) {
-            const fetchUserInfo = async () => {
+            const fetchLatestInfo = async () => {
                 const data = await fetchData(`name=${userInfo.name}&phone=${userInfo.phone}`);
                 if (data) {
-                    userInfo.goldLeft = data.goldLeft;
+                    handleUserInfo({
+                        ...userInfo,
+                        goldLeft: data.goldLeft,
+                    });
                 }
-                fetchUserInfo();
             };
+            fetchLatestInfo();
         }
-    }, []);
+    }, []); // 초기 1회만 실행
 
     return (
         <main className="container">
@@ -52,42 +61,53 @@ const Landing = () => {
     );
 };
 
+/** * 🌟 Store.tsx와 동일한 로직을 가진 모달 컨텐츠 컴포넌트
+ */
 const StoreEntrance = () => {
-    const modal = useModal();
+    const { close } = useModal();
     const { handleUserInfo } = useUserInfo();
+    const navigate = useNavigate();
     const { isLoading, error, fetchData } = useFetch<StudentInfo>({
         action: "getstudentinfo",
     });
-    const navigate = useNavigate();
+
     const submitCallback = async (value?: InputValueType) => {
-        if (!value) return;
-        if (value?.name === "" && value?.phone === "") return;
-        const data = await fetchData(`name=${value?.name}&phone=${value?.phone}`);
+        if (!value?.name || !value?.phone) return;
+
+        const data = await fetchData(`name=${value.name}&phone=${value.phone}`);
         if (!data) return;
 
         handleUserInfo({
-            name: value?.name,
-            phone: value?.phone,
-            goldLeft: data?.goldLeft,
+            name: value.name,
+            phone: value.phone,
+            goldLeft: data.goldLeft,
         });
 
-        modal.close("store-entrance");
+        // 모달 닫고 상점으로 이동
+        close("store-entrance");
         navigate(ROUTE_PATH.STORE);
     };
+
     return (
         <div className="store-entrance">
-            {error && <p>{error}</p>}
+            {/* 상단 에러 메시지 표시 */}
+            {!isLoading && error && (
+                <p className="status-msg error" style={{ color: "#ef4444", textAlign: "center", marginBottom: "10px" }}>
+                    {error}
+                </p>
+            )}
 
-            <CButton
-                className="menuBtn close-btn"
-                mode="outline"
-                disabled={isLoading}
-                onClick={() => modal.close("store-entrance")}
-            >
-                X
-            </CButton>
-
-            {isLoading ? <LoadingIndicator /> : <CustomForm submitCallback={submitCallback} />}
+            {isLoading ? (
+                <div style={{ padding: "40px 0" }}>
+                    <LoadingIndicator />
+                </div>
+            ) : (
+                <CustomForm
+                    submitCallback={submitCallback}
+                    // 🔥 Store/Status와 동일하게 하단 닫기 버튼으로 모달을 닫음
+                    onCancel={() => close("store-entrance")}
+                />
+            )}
         </div>
     );
 };

@@ -1,48 +1,95 @@
+/* Form.style.scss */
+
 form#form {
-  @include flex(column, 15px, center, center);
-  max-width: 420px;
-  padding: 25px 20px;
-  border-radius: $radius-xl;
-  background: $color-panel;
-  box-shadow: $shadow-soft;
-}
-
-/* 입력 컨테이너 */
-.input-container {
-  @include flex(column, 10px, flex-start, flex-start);
-  width: 100%;
-
-  input {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     width: 100%;
-    padding: 12px;
-    font-size: 1em;
-    border-radius: $radius-md;
-    border: none;
-    text-align: center;
-    background: rgba(#fff, 0.9);
-    color: #333;
-    transition: box-shadow $transition-fast, transform $transition-fast;
+    padding: 10px 0;
+    background: transparent;
 
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 6px $color-gold;
-      transform: scale(1.02);
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+
+        input {
+            width: 100%;
+            height: 54px;
+            padding: 0 20px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.9) !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
+            color: #fff;
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+
+            &:focus {
+                outline: none;
+                background: rgba(30, 41, 59, 1);
+                border-color: #fbbf24 !important;
+                box-shadow:
+                    0 0 0 1px #fbbf24,
+                    0 0 15px rgba(251, 191, 36, 0.3);
+                transform: translateY(-2px);
+            }
+        }
     }
-  }
-}
 
-/* 버튼 */
-form#form button {
-  @include button-base;
-  width: 100%;
-  font-size: 1em;
-  font-weight: bold;
-  background: $color-btn;
-  border-radius: $radius-md;
-  transition: transform $transition-fast, background $transition-fast;
+    /* 🔘 버튼 영역 (중요: 선택자 강도를 높였습니다) */
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; // 🌟 버튼 간격 축소 유지
+        width: 100%;
+        margin-top: 5px;
 
-  &:hover {
-    background: $color-btn-hover;
-    transform: scale(1.03);
-  }
+        // 모든 버튼 공통
+        .c-btn {
+            width: 100%;
+            height: 52px !important;
+            border-radius: 12px !important;
+            font-size: 1rem !important;
+            font-weight: 800 !important;
+            font-family: "Orbitron", sans-serif;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        // 🟢 [복구] 검색 버튼 (ID와 클래스를 함께 써서 우선순위 최상위로)
+        #searchBtn.c-btn,
+        .c-btn.primary {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border: 1px solid rgba(16, 185, 129, 0.5) !important;
+            color: #34d399 !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+            &:hover {
+                background: rgba(16, 185, 129, 0.2) !important;
+                border-color: #10b981 !important;
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+                transform: translateY(-2px);
+            }
+        }
+
+        // ⚪ [유지] 닫기 버튼
+        .close-action-btn.c-btn,
+        .c-btn.outline {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #94a3b8 !important;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-color: rgba(255, 255, 255, 0.4) !important;
+                color: #fff !important;
+            }
+        }
+    }
 }

@@ -7,56 +7,94 @@
 
 body {
     font-family: $font-family;
-    background: linear-gradient(135deg, $color-bg-grad-a, $color-bg-grad-b);
+    // 아까 범인이었던 애매한 보라색 대신 깊은 밤의 다크 블루 그라데이션
+    background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
     background-size: cover;
     background-attachment: fixed;
     color: $color-text;
-    text-align: center;
-    padding: 40px;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    /* text-align: center는 필요한 컴포넌트 내부에서만 쓰는 게 좋습니다. 
+       전체에 걸리면 모든 레이아웃이 꼬일 수 있거든요. */
 }
 
 h1 {
     color: $color-gold;
-    text-shadow: 1px 1px 3px #000;
-    margin-bottom: 20px;
+    font-family: "Orbitron", sans-serif; // 타이틀은 게임 폰트 추천
+    text-shadow:
+        0 0 10px rgba($color-gold, 0.3),
+        2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
+    letter-spacing: 2px;
 }
 
-.back-home {
-    @include button-base;
-    display: inline-block;
-    margin: 4px auto 0;
-    padding: 12px 24px;
-    font-size: 1.2em;
-    font-weight: bold;
-    background: linear-gradient(135deg, $color-btn, #ff5722);
-    border-radius: $radius-md;
-    text-decoration: none;
-    box-shadow: $shadow-strong;
-    transition: transform $transition-fast, background 0.3s;
-    width: 60%;
-
-    &:hover {
-        background: linear-gradient(135deg, $color-btn-hover, #ff7043);
-        transform: scale(1.05);
-    }
-}
-
-.go-inventory {
-    @include button-base;
-    display: inline-block;
-    margin: 30px auto 0;
-    padding: 12px 24px;
-    font-size: 1.2em;
-    font-weight: bold;
-    background: linear-gradient(135deg, $color-btn, #ff5722);
-    border-radius: $radius-md;
-    text-decoration: none;
-    box-shadow: $shadow-strong;
-    transition: transform $transition-fast, background 0.3s;
+// 2. 버튼 그룹 (제목 아래로 이동됨)
+.actions {
+    @include flex(row, 10px, center, center);
     width: 100%;
+    margin: 10px 0;
 
-    &:hover {
-        background: linear-gradient(135deg, $color-btn-hover, #ff7043);
-        transform: scale(1.05);
+    .status-btn {
+        flex: 1;
+        height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden; // 반사광 유출 방지
+
+        padding: 0 15px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        border-radius: $radius-md;
+        box-sizing: border-box;
+        text-decoration: none;
+        cursor: pointer;
+
+        // 기본 배경 및 테두리
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all $transition-fast;
+
+        // ✨ 반사광 (핵심 부분)
+        &::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -150%; // 평상시 왼쪽 멀리 대기
+            width: 80%; // 광선 너비 살짝 조절
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                // 반사광 농도
+                transparent
+            );
+            transform: skewX(-25deg);
+
+            /* 여기가 포인트! 기본 상태에 transition을 주면
+           마우스를 뗐을 때 원래 위치(-150%)로 돌아가며 반대로 빛납니다.
+        */
+            transition: left 0.5s ease-in-out;
+        }
+
+        &:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+
+            // 마우스 올리면 오른쪽으로 이동
+            &::after {
+                left: 150%;
+                transition: left 0.5s ease-in-out;
+            }
+        }
+
+        &:active {
+            transform: translateY(-1px) scale(0.98);
+        }
     }
 }

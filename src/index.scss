@@ -1,0 +1,74 @@
+/* index.scss */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+KR:wght@300;500;900&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0f172a; // 심해 다크 컬러
+    color: #f1f5f9;
+    font-family: "Noto Sans KR", sans-serif;
+    min-height: 100vh;
+}
+
+// 공통 버튼 베이스 (어디서나 똑같은 크기와 반사광을 가짐)
+/* index.scss */
+
+.common-action-btn {
+    flex: 1;
+    height: 54px !important; // 조금 더 도톰하게
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    // 폰트 설정 (강조)
+    font-family: "Orbitron", "Noto Sans KR", sans-serif !important;
+    font-size: 1.05rem !important; // 폰트 키움
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+
+    // 외형 (유리 테마)
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+
+    text-decoration: none !important;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // 반사광 효과
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: skewX(-20deg);
+        transition: left 0.6s ease-in-out;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+
+        &::after {
+            left: 150%;
+        }
+    }
+
+    &:active {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+}

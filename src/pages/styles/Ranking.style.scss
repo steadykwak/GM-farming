@@ -1,60 +1,271 @@
+// Ranking.style.scss
+
+.ranking-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #f1f5f9;
+
+    .ranking-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+        width: 100%;
+        max-width: 900px; // 테이블 최대 너비와 맞춰줍니다
+        margin: 0 auto 20px auto; // 중앙 정렬 유지 및 하단 여백
+
+        .glitch-title {
+            font-family: "Orbitron", sans-serif;
+            font-size: 2.8rem;
+            background: linear-gradient(to bottom, #fff, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 0;
+        }
+
+        // 랭킹 페이지 전용 버튼 제어
+        .ranking-actions {
+            width: 100%;
+            display: flex;
+            max-width: 900px; // 테이블 너비와 일치
+            gap: 12px; // 버튼 사이 간격
+
+            .common-action-btn {
+                flex: 1; // 가로로 꽉 차도록 확장
+                height: 54px; // Status 페이지와 높이 통일
+                font-weight: 500 !important; // 더 얇게 원하시면 500
+                letter-spacing: 0;
+                // 만약 버튼 내 텍스트가 너무 길어 보인다면 폰트 크기를 살짝 조절
+                font-size: 1.1rem !important;
+                // '내 순위 보기' 버튼 포인트 컬러 (에메랄드)
+                &.find-me {
+                    &:hover {
+                        border-color: rgba(255, 255, 255, 0.4) !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.table-wrapper {
+    width: 100%;
+    max-width: 1000px;
+    overflow-x: auto; // 모바일 대응
+    animation: slideUp 0.6s ease-out;
+
+    // 스크롤바 커스텀 (다크 테마용)
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+}
+
 .ranking-table {
-  margin: 30px auto;
-  border-collapse: collapse;
-  width: 90%;
-  max-width: 800px;
-  @include card($bg: $color-card, $radius: $radius-xl, $shadow: $shadow-soft);
-  overflow: hidden;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px; // 행 사이 간격
 
-  th,
-  td {
-    padding: 12px;
-    border: 1px solid $color-border;
+    .status-row {
+        background: transparent !important; // 로딩 행은 배경색 제외
+        border: none !important;
+
+        &:hover {
+            transform: none !important; // 로딩 행은 호버 애니메이션 제외
+            box-shadow: none !important;
+        }
+
+        td {
+            padding: 50px 0; // 상하 여백을 충분히 주어 시원하게 보이도록 함
+            border: none !important;
+            background: transparent !important;
+
+            // 로딩 바가 표 전체 너비를 꽉 채우도록 설정
+            .status-msg {
+                width: 100%;
+                max-width: 100%; // 부모 td 너비에 맞춤
+                margin: 0;
+                box-sizing: border-box;
+            }
+        }
+    }
+
+    th {
+        padding: 20px 15px; // 상하 패딩을 조금 더 주어 여유 공간 확보
+        color: #e2e8f0; // 더 밝은 슬레이트 화이트로 변경
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.85rem; // 크기 살짝 키움
+        font-weight: 700; // 두께감 추가
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
+        opacity: 1; // 투명도 제거하여 선명하게
+
+        // 하단에 얇고 선명한 보더 추가 (구분선 역할)
+        border-bottom: 2px solid rgba(251, 191, 36, 0.3) !important;
+
+        // 은은한 텍스트 글로우 (선택 사항: 게임 느낌 강조)
+        text-shadow: 0 0 8px rgba(226, 232, 240, 0.2);
+    }
+
+    tbody tr {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(12px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        td {
+            padding: 18px 10px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            &:first-child {
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px 0 0 12px;
+            }
+            &:last-child {
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 0 12px 12px 0;
+            }
+        }
+
+        // 호버 효과
+        &:hover {
+            transform: scale(1.01) translateY(-2px);
+            background: rgba(47, 63, 89, 0.8);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        // --- TOP 3 디자인 ---
+        &.first {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15), rgba(30, 41, 59, 0.6));
+            td {
+                color: #fbbf24;
+                font-weight: 700;
+            }
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        &.second {
+            background: linear-gradient(90deg, rgba(226, 232, 240, 0.1), rgba(30, 41, 59, 0.6));
+            td {
+                color: #e2e8f0;
+                font-weight: 700;
+            }
+        }
+
+        &.third {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.1), rgba(30, 41, 59, 0.6));
+            td {
+                color: #cd7f32;
+                font-weight: 700;
+            }
+        }
+
+        // --- 본인 랭킹 강조 ---
+        &.my-rank {
+            outline: 2px solid #10b981;
+            outline-offset: -2px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            background: rgba(16, 185, 129, 0.1) !important;
+
+            .player-name {
+                color: #10b981;
+                font-weight: 900;
+                &::after {
+                    content: " (YOU)";
+                    font-size: 0.7rem;
+                    margin-left: 5px;
+                }
+            }
+        }
+    }
+}
+
+/* 상태 메시지 (로딩/에러) - 사이버네틱 스타일 */
+.status-msg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    margin: 20px 0;
+    font-size: 1rem;
+    font-family: "Orbitron", sans-serif; // 버튼과 폰트 통일
+    letter-spacing: 1px;
+    border-radius: 12px;
     text-align: center;
-  }
 
-  th {
-    background: $color-table-header;
-    color: $color-gold;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px #000;
-  }
+    // 은은한 유리 질감 배경
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
 
-  tr {
-    &:nth-child(even) {
-      background: rgba($color-text, 0.05);
-    }
+    transition: all 0.3s ease;
 
-    &:hover {
-      background: rgba($color-text, 0.1);
-      transform: scale(1.01);
-      transition: all $transition-fast ease;
-    }
-    &.first {
-      background: rgba($color-gold, 0.7);
-      color: $color-gold;
-      font-weight: bold;
-      height: 100px;
+    /* ⏳ 로딩 상태: 푸른 빛이 깜빡이는 스캐닝 효과 */
+    &.loading {
+        color: #38bdf8; // 사이안 블루
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        background: rgba(56, 189, 248, 0.05);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+        animation: status-pulse 1.5s infinite ease-in-out;
+
+        &::before {
+            content: "🛰️"; // 아이콘 살짝 추가 (선택 사항)
+            margin-right: 10px;
+        }
     }
 
-    &.second {
-      background: rgba($color-silver, 0.7);
-      color: rgba($color-gold, 0.8);
-      font-weight: bold;
-      height: 80px;
-    }
+    /* ❌ 에러 상태: 경고 시스템 느낌의 붉은 네온 효과 */
+    &.error {
+        color: #f87171; // 부드러운 레드
+        border: 1px solid rgba(248, 113, 113, 0.4);
+        background: rgba(248, 113, 113, 0.08);
+        box-shadow:
+            0 0 20px rgba(248, 113, 113, 0.15),
+            inset 0 0 10px rgba(248, 113, 113, 0.05);
+        font-weight: 700;
 
-    &.third {
-      background: rgba($color-bronze, 0.5);
-      color: rgba($color-gold, 0.8);
-      font-weight: bold;
-      height: 60px;
+        &::before {
+            content: "⚠️";
+            margin-right: 10px;
+        }
     }
-    &.my-rank {
-      background: rgba(Aqua, 0.3);
-      box-shadow: 0 0 10px Aqua;
-      color: $color-text;
-      font-weight: bold;
+}
+
+/* 🔄 로딩 시 부드럽게 깜빡이는 애니메이션 */
+@keyframes status-pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.99);
     }
-  }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.6;
+        transform: scale(0.99);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

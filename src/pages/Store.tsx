@@ -16,19 +16,19 @@ const getVisibleSales = () => {
     const batchId = import.meta.env.VITE_BATCH_ID; // URL 대신 환경 변수 활용
     let list = SALES.map((item) => {
         // 2기일 때만 식사권 가격 수정
-        if (batchId === "2" && item.id === "date") {
+        if (batchId === "02" && item.id === "date") {
             return { ...item, price: 22500 };
         }
         return item;
     });
 
     // 1기: zepPoint 숨기기
-    if (batchId === "1") {
+    if (batchId === "01") {
         list = list.filter((item) => item.id !== "zep");
     }
 
     // 4, 5기: unityAsset 숨기기
-    if (["4", "5"].includes(batchId)) {
+    if (["04", "05"].includes(batchId)) {
         list = list.filter((item) => item.id !== "asset");
     }
 

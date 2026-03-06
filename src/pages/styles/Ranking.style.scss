@@ -8,7 +8,7 @@
     min-height: 100vh;
     padding: 40px 20px;
     color: #f1f5f9;
-
+    background: transparent !important; // 기존 배경색 삭제 또는 투명화
     .ranking-header {
         display: flex;
         flex-direction: column;

@@ -8,7 +8,13 @@
 }
 
 body {
-    background-color: #0f172a; // 심해 다크 컬러
+    background-color: #0b0f1a !important;
+    background-image:
+        linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px) !important;
+    background-size: 50px 50px !important;
+    background-attachment: fixed !important; // 스크롤해도 격자 고정
+    margin: 0;
     color: #f1f5f9;
     font-family: "Noto Sans KR", sans-serif;
     min-height: 100vh;

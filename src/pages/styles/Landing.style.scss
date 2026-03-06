@@ -3,16 +3,11 @@
 .container {
     // 1. 배경 설정: 깊이감 있는 어두운 배경과 그리드 패턴
     min-height: 100vh;
-    background-color: #0b0f1a;
-    background-image:
-        linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px; // 배경 그리드 효과
     @include flex(column, 0, center, center);
     padding: 40px 20px;
     position: relative;
     overflow: hidden;
-
+    background: transparent !important; // 기존 배경색 삭제 또는 투명화
     // 장식용 빛무리 (Vignette)
     &::before {
         content: "";
@@ -26,33 +21,7 @@
         pointer-events: none;
     }
 
-    h1 {
-        margin-bottom: 60px;
-        font-size: 3.5em;
-        font-weight: 900;
-        color: #fff;
-        text-transform: uppercase;
-        letter-spacing: -2px;
-        // 메탈릭 + 네온 텍스트 효과
-        text-shadow:
-            0 0 10px rgba(16, 185, 129, 0.8),
-            0 0 20px rgba(16, 185, 129, 0.4),
-            2px 2px 0px #000;
-        z-index: 10;
-
-        // "시즌" 표시 같은 작은 텍스트 추가 가능 (After 활용)
-        &::after {
-            content: "SEASON 2";
-            display: block;
-            font-size: 0.3em;
-            letter-spacing: 8px;
-            color: $color-gold;
-            margin-top: 10px;
-        }
-    }
-
     .menuBtn {
-        @include button-base;
         @include flex(row, 20px, center, center);
         position: relative;
         font-size: 1.8em;
@@ -67,7 +36,6 @@
         border: 1px solid rgba(16, 185, 129, 0.3);
         border-radius: 16px;
         backdrop-filter: blur(8px);
-        color: #fff;
         transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
         z-index: 10;
 
@@ -120,18 +88,4 @@
     border-radius: 20px;
     position: relative;
 
-    .close-btn {
-        @include flex(center, center);
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-        cursor: pointer;
-        transition: background 0.3s;
-
-        &:hover {
-            background: #ef4444;
-        }
-    }
 }

@@ -92,7 +92,7 @@ const Ranking = () => {
                                 </td>
                             </tr>
                         ) : rank && rank.length > 0 ? (
-                            <RankList rank={rank} /> // 이 주변에 중괄호 외의 문자열이나 공백이 없어야 함
+                            <RankList rank={rank} />
                         ) : (
                             <tr>
                                 <td colSpan={6} className="status-msg">
